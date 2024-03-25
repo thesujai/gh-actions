@@ -14,8 +14,6 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const { context, github } = require('@actions/github');
-
             const comment = context.payload.comment.body;
             const isPR = context.payload.issue.pull_request != null;
 
