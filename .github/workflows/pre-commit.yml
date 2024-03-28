@@ -6,11 +6,19 @@ on:
 
 jobs:
   main:
+    name: "Pre-commit checks"
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-python@v4
-      with:
-        python-version: 3.x
-    - uses: pre-commit-ci/lite-action@v1.0.2
-      if: always()
+        - uses: actions/checkout@v3
+        - uses: actions/setup-python@v4
+          with:
+            python-version: 3.x
+        - name: Install pre-commit
+          run: pip install pre-commit
+
+        - name: Run pre-commit
+          run: pre-commit run --all-files --show-diff-on-failure
+
+        - name: Run pre-commit-ci-lite
+          uses: pre-commit-ci/lite-action@v1.0.2
+          if: always()
