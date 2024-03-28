@@ -24,7 +24,7 @@ jobs:
       - name: Modify event_name
         if: github.event_name == 'issue_comment' && contains(github.event.comment.body, '/autofixme!')
         run: |
-          github.event.name = 'pull_request'
+          github.event_name = 'pull_request'
           echo "::set-output name=event_name::$GITHUB_EVENT_NAME"
 
       - name: Run pre-commit-ci-lite
