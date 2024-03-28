@@ -12,4 +12,4 @@ repos:
         exclude: '^.+?(\.json|\.po)$'
 
 ci:
-    autofix_prs: true
+    autofix_prs: false
