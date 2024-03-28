@@ -18,5 +18,5 @@ jobs:
             const isPR = context.payload.issue.pull_request != null;
 
             if (isPR && comment.includes('/hello')) {
-              console.log('Hello, world!');
+              //do things
             }
