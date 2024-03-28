@@ -22,6 +22,7 @@ jobs:
         run: pre-commit run --all-files --show-diff-on-failure
 
       - name: Modify event_name
+        id: me
         uses: actions/github-script@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -32,6 +33,8 @@ jobs:
             eventData['pull_request'] = eventData['issue'];
             fs.writeFileSync(eventPath, JSON.stringify(eventData));
             console.log('Event payload modified successfully.');
+            let eventData = JSON.parse(fs.readFileSync(eventPath, 'utf8'));
+            console.log(eventData)
 
       - name: Run pre-commit-ci-lite
         uses: pre-commit-ci/lite-action@v1.0.2
