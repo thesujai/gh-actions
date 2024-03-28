@@ -22,10 +22,16 @@ jobs:
         run: pre-commit run --all-files --show-diff-on-failure
 
       - name: Modify event_name
-        if: github.event_name == 'issue_comment' && contains(github.event.comment.body, '/autofixme!')
-        run: |
-          github.event_name = 'pull_request'
-          echo "::set-output name=event_name::$GITHUB_EVENT_NAME"
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const eventPath = process.env.GITHUB_EVENT_PATH;
+            let eventData = JSON.parse(fs.readFileSync(eventPath, 'utf8'));
+            eventData['pull_request'] = eventData['issue'];
+            fs.writeFileSync(eventPath, JSON.stringify(eventData));
+            console.log('Event payload modified successfully.');
 
       - name: Run pre-commit-ci-lite
         uses: pre-commit-ci/lite-action@v1.0.2
