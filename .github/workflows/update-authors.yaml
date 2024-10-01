@@ -1,0 +1,54 @@
+name: Update AUTHORS.md
+
+on:
+  pull_request_target:
+    types:
+      - closed
+
+jobs:
+  update-authors:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout develop branch
+        uses: actions/checkout@v4
+        with:
+          ref: 'develop'
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check if author is in AUTHORS.md
+        id: check-author
+        run: |
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+          if ! grep -q "| ${PR_AUTHOR} |" AUTHORS.md; then
+            echo "new_author=true" >> $GITHUB_ENV
+          else
+            echo "new_author=false" >> $GITHUB_ENV
+          fi
+
+      - name: Add author to AUTHORS.md if not present
+        if: env.new_author == 'true'
+        run: |
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+          AUTHOR_NAME=$(curl -s https://api.github.com/users/${PR_AUTHOR} | jq -r '.name')
+          if [ -z "$AUTHOR_NAME" ]; then
+            AUTHOR_NAME="-"
+          fi
+          echo "| $AUTHOR_NAME | $PR_AUTHOR |" >> AUTHORS.md
+
+      - name: Commit updated AUTHORS.md
+        if: env.new_author == 'true'
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add AUTHORS.md
+          git commit -m "Add ${{ github.event.pull_request.user.login }} to AUTHORS.md"
+          
+      - name: Push changes to develop
+        if: env.new_author == 'true'
+        uses: ad-m/github-push-action@v0.8.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: 'develop'
