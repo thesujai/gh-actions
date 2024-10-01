@@ -46,8 +46,7 @@ jobs:
           git add AUTHORS.md
           git commit -m "Add ${{ github.event.pull_request.user.login }} to AUTHORS.md"
           
-      - name: Generate GitHub App Token
-        uses: tibdex/github-app-token@v1
+      - uses: tibdex/github-app-token@v1
         id: generate-token
         with:
           app_id: ${{ secrets.LE_BOT_APP_ID }}
